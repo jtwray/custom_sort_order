@@ -4,33 +4,34 @@ import { AddForm } from "./AddForm";
 import { EditForm } from "./EditForm";
 import { userAPI } from "../utils/axios";
 import { sortUsers } from "../utils/sortUsers";
-
+// import { mockUsersList } from "../utils/mockUsersList";
+import { mockUsersList } from "../utils/mockUsersList.js";
+import { mockShippingHistoryList_1000 } from "../utils/mockShippingHistoryList_1000.js";
 export function Users() {
   const [listItems, setListItems] = useState(() => {
     console.log("useState--listItems.setListItems");
     return {
       timestamp: Date.now(),
-      users: []
+      users: [],
     };
   });
   const [selectedItem, setSelectedItem] = useState(() => {
     console.log("useState--SelectedItem.setSelectedItem");
     return null;
   });
-  // useState(null);
   const [sortBy, setSortBy] = useState(() => {
     console.log("useState--SortBy.setSortBy");
     return { direction: "", key: "" };
   });
-  //useState({ direction: "", key: "" });
-  // const [sortByOrder, setSortByOrder] = useState([sortBy]);
+
   const [sortByOrder, setSortByOrder] = useState(() => [
     { direction: "ascending", key: "username", type: "string" },
     { direction: "descending", key: "email", type: "string" },
     { direction: "ascending", key: "name", type: "string" },
     { direction: "ascending", key: "purchaseprice", type: "number" },
-    { direction: "ascending", key: "dateofbirth", type: "date" }
+    { direction: "ascending", key: "dateofbirth", type: "date" },
   ]);
+
   useEffect(() => {
     userAPI
       .get("/users")
@@ -39,11 +40,14 @@ export function Users() {
         ({ data }) => setListItems({ timestamp: Date.now(), users: data })
         // sortUsers(data ?? [], sortByOrder))
       )
-      .catch((message) => console.error({ message }));
+      .catch((message) => console.error({ message }))
+      .finally(() =>
+        setListItems({ timestamp: Date.now(), users: mockUsersList })
+      );
   }, []);
 
   const handleAddItem = (item) => {
-    console.log("i ran in handleAddItem");
+    // console.log("i ran in handleAddItem");
     // setListItems(() => sortUsers([...listItems.users, item], sortByOrder));
     setListItems({ users: [...listItems.users, item], timestamp: Date.now() });
   };
@@ -67,7 +71,11 @@ export function Users() {
   }, [
     // JSON.stringify(listItems?.users),
     // JSON.stringify(sortByOrder),
-    listItems.timestamp
+    // arrays or lists will update correctly in dependency arrays but only if they include primitives only
+    // functions and objects will be created new on every render
+    // use a primitiive  such as an object key that is a string or number
+
+    listItems.timestamp,
   ]);
 
   return (
@@ -80,7 +88,7 @@ export function Users() {
         margin: "0 auto",
         fontFamily: "sans-serif",
         gap: 45,
-        padding: 15
+        padding: 15,
       }}
     >
       <fieldset
@@ -88,12 +96,12 @@ export function Users() {
           background: "#f0f0f0",
           border: "solid 1px #d1d1d1",
           borderRadius: "10px",
-          color: "#373737"
+          color: "#373737",
         }}
       >
         <legend
           style={{
-            fontSize: 32
+            fontSize: 32,
           }}
         >
           Users
